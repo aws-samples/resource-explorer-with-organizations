@@ -4,13 +4,9 @@ There are use cases where users are eager to find lingering resources, or resour
 
 By utilising Resource Explorer and Step Functions, we can perform workloads over multiple accounts within an organisation. We can therefore gather all the necessary information from these accounts, and use them to create a report to gain a wider understanding of the state of your AWS accounts. 
 
-However, We can deploy this to all our accounts in our AWS Organization using StackSets [(See Here)](https://docs.aws.amazon.com/resource-explorer/latest/userguide/manage-service-all-org-with-stacksets.html). This would allow us to perform single queries across accounts to get all resources of specific types.
+As of this release, the limitation of Resource Explorer is that it is done on a per account basis. However, one workaround is that we can deploy this to all our accounts in our AWS Organization using StackSets [(See Here)](https://docs.aws.amazon.com/resource-explorer/latest/userguide/manage-service-all-org-with-stacksets.html). This would allow us to perform single queries across accounts to get all resources of specific types.
 
-The other reason it would be useful to explore the resource explorer is that it allows for querying against multiple parameters; for instance, it allows you to filter on untagged instances of certain types. This might form the basis for finding untagged resources in the future, and can be worked into a workload to detect untagged resources, and alert the necessary people. 
-
-It is also a good tool to enable just for discoverability, and for alerting. It allows you to search for resources based on a variety of parameters, and go directly to the resource find.
-
-The use case we are demonstrating here is to find RDS instances in an account over multiple regions, and create an Excel Document out of them. 
+The use case we are demonstrating here is to find resources in an multiple AWS accounts over multiple regions, and generating an Excel Document displaying the Account it belongs to, Name, Resource Type, and ARN of the resource.
 
 ### Services
 
