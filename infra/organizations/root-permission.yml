@@ -1,0 +1,38 @@
+Description: >-
+  CFN Stack allowing Tool Account to list accounts in the organisation.
+Parameters:
+  # Account where workload is deployed. 
+  ToolAccountId:
+    Type: String
+    Description: The account id of where the resource explorer report generator is deployed.
+Resources:
+
+  # Policy to allow Resource Explorer to Search account and regions.
+  OrganizationReadPermissions:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'OrganizationReadPermissions'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Action:
+                "organizations:ListAccounts*"
+            Resource: '*'
+      Roles:
+        - Ref: OrganizationAssumableRole
+
+  # Allows the Lambda in the Tool account to have access to the above permissions
+  OrganizationAssumableRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName : 'ResourceExplorerOrganizationAccountAssumableRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${ToolAccountId}:root'
+            Action: 'sts:AssumeRole'
+
+  

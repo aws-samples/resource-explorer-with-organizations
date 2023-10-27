@@ -1,0 +1,76 @@
+Description: >-
+  CFN Stack setting up Permissions needed for the workload in each root account.
+Parameters:
+  # Account where workload is deployed. 
+  ToolAccountId:
+    Type: String
+    Description: The account id of where the resource explorer report generator is deployed.
+Resources:
+  # Allows account to get access to Cloudwatch Metrics about RDS Instances. 
+  CloudWatchMetricsReadPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'CloudWatchMetricsReadPolicy'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Action:
+              - 'cloudwatch:GetMetricData'
+              - 'cloudwatch:GetMetricStatistics'
+              - 'cloudwatch:ListMetrics'
+            Resource: '*'
+      Roles:
+        - Ref: OrganizationAssumableRole
+
+  # Policy to allow the extraction of Metadata from RDS instances in Org Acct
+  RDSReadPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'RDSReadPolicyResourceExplorerWorkload'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Action:
+              - 'rds:DescribeDBClusters'
+              - 'rds:DescribeDBInstances'
+              - 'rds:ListTagsForResource'
+            Resource: '*'
+      Roles:
+        - Ref: OrganizationAssumableRole
+
+  # Policy to allow Resource Explorer to Search account and regions.
+  ResourceExplorerReadPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: 'ResourceExplorerReadPolicy'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Action:
+              - "resource-explorer-2:Get*"
+              - "resource-explorer-2:List*"
+              - "resource-explorer-2:Search"
+              - "resource-explorer-2:BatchGetView"
+              - "ec2:DescribeRegions"
+              - "ram:ListResources"
+            Resource: '*'
+      Roles:
+        - Ref: OrganizationAssumableRole
+
+  # Allows the Lambda in the Tool account to have access to the above permissions
+  OrganizationAssumableRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName : 'ResourceExplorerOrganizationAccountAssumableRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${ToolAccountId}:root'
+            Action: 'sts:AssumeRole'
+
+  

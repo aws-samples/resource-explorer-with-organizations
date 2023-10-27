@@ -1,0 +1,30 @@
+Description: >-
+  CFN Stack setting up ResourceExplorer with a Local Index, and a new Default View.
+Parameters:
+  AggregatorIndexRegion:
+    Type: String
+    Description: Index that aggregates all regions together. Should match the region you are deploying the cdk stack to.  
+Conditions:
+  IsAggregatorIndex: !Equals [!Ref "AWS::Region", !Ref AggregatorIndexRegion]
+Resources:
+  Index:
+    Type: 'AWS::ResourceExplorer2::Index'
+    Properties:
+      Type: !If [IsAggregatorIndex, "AGGREGATOR", "LOCAL"]
+      Tags:
+        Purpose: ResourceExplorer CFN Stack
+  View:
+    Condition: IsAggregatorIndex
+    Type: 'AWS::ResourceExplorer2::View'
+    Properties:
+      ViewName: DefaultView
+      IncludedProperties:
+        - Name: tags
+      Tags:
+        Purpose: ResourceExplorer CFN Stack
+    DependsOn: Index
+  DefaultViewAssociation:
+    Condition: IsAggregatorIndex
+    Type: 'AWS::ResourceExplorer2::DefaultViewAssociation'
+    Properties:
+      ViewArn: !Ref View

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "preserveConstEnums": true,
+    "typeRoots": ["./states/types", "./node_modules/@types"],
+    "types": ["jest"]
+  },
+  "include": ["./states/**/*", "./tests/*", "./typings/**/*.d.ts", "./states/types/excel4node.d.ts"],
+  "exclude": ["**/*.spec.ts"]
+}
